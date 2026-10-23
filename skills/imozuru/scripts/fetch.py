@@ -774,7 +774,7 @@ def fetch_source(sources: Path, name: str, url: str, destination: Path) -> int:
         ext = ".json" if "json" in ctype else ".csv" if "csv" in ctype else ".md"
         kept = saved = sources / f"{name}{ext}"
         text = decode_text(body, ctype)
-        kept.write_text(text, encoding="utf-8")
+        kept.write_text(text, encoding="utf-8", newline="\n")
     elif "html" in ctype or body.lstrip()[:1] == b"<":
         kept = sources / f"{name}.md"
         text = html_to_md(url, kept, body, ctype)

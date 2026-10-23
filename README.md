@@ -68,6 +68,20 @@ npx skills add MaryCache/imozuru
 
 手動の場合は、`skills/imozuru/` を `~/.claude/skills/imozuru/` にコピーしてください。
 
+### Codex のリポジトリスキル
+
+Codex で使う作業リポジトリの `.agents/skills/imozuru/` に、このリポジトリの `skills/imozuru/` をディレクトリごとコピーします。`SKILL.md` だけでなく `scripts/` と `references/` も必要です。Codex は作業ディレクトリからリポジトリのルートまでにある `.agents/skills` を探します（[OpenAI のスキル仕様](https://developers.openai.com/codex/build-skills)）。
+
+Windows PowerShell では、このリポジトリのルートで次を実行します。`$targetRepo` は Codex で作業するリポジトリのパスに置き換えてください。
+
+```powershell
+$targetRepo = "C:\path\to\your-repo"
+New-Item -ItemType Directory -Force (Join-Path $targetRepo ".agents\skills") | Out-Null
+Copy-Item -Recurse "skills\imozuru" (Join-Path $targetRepo ".agents\skills\imozuru")
+```
+
+Codex CLI または IDE 拡張でその作業リポジトリを開き、`$imozuru 芋づる式に調べて: ...` のように呼び出します。スキル一覧に出ない場合は Codex を再起動してください。Claude Code の `/plugin` や `/imozuru` とは呼び方が異なります。
+
 ## 必要なもの
 
 スクリプトはPython 3.10以上の標準ライブラリだけで動き、次のコマンドは入っていれば使います。
@@ -98,7 +112,7 @@ Gaussian Splattingってよく聞くけど全然わからない。論文とか�
 /imozuru watch react
 ```
 
-結果は `~/research/<話題>/` に、次の形で保存されます。
+結果は既定で `~/research/<話題>/` に保存されます。そこが書き込み許可範囲の外なら、許可された作業リポジトリ内の `research/<話題>/` などを指定してください。保存先を明示してから、次の形で作ります。
 
 ```
 map.md         問い・要る主張・用語・人・場・原文の表・次の手がかり
@@ -111,8 +125,10 @@ report.html    抜き書きのページ
 抜き書きのページの見本は `examples/demo/` にあり、次のコマンドでスクリプトだけを試せます。
 
 ```sh
-python3 skills/imozuru/scripts/report.py examples/demo
+python3 -X utf8 skills/imozuru/scripts/report.py examples/demo --check
 ```
+
+Windows では `py -3 -X utf8 skills\imozuru\scripts\report.py examples\demo --check` を使います（`py -3` が使えない環境では `python -X utf8`）。ここはソースリポジトリの見本を検査するコマンドです。実際の調査では、スクリプトを作業ディレクトリから探さず、コピーしたスキルの `SKILL.md` と同じ場所の `scripts/` から実行します。
 
 ## 設計の考え方
 

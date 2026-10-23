@@ -72,6 +72,20 @@ npx skills add MaryCache/imozuru
 
 To install by hand, copy `skills/imozuru/` to `~/.claude/skills/imozuru/`.
 
+### As a Codex repository skill
+
+Copy the entire `skills/imozuru/` directory into `.agents/skills/imozuru/` in the repository where you use Codex. Keep `SKILL.md`, `scripts/`, and `references/` together. Codex scans `.agents/skills` from the working directory up to the repository root ([OpenAI's skill documentation](https://developers.openai.com/codex/build-skills)).
+
+From the root of this source repository, use PowerShell on Windows. Replace `$targetRepo` with the path of the repository where you use Codex.
+
+```powershell
+$targetRepo = "C:\path\to\your-repo"
+New-Item -ItemType Directory -Force (Join-Path $targetRepo ".agents\skills") | Out-Null
+Copy-Item -Recurse "skills\imozuru" (Join-Path $targetRepo ".agents\skills\imozuru")
+```
+
+Open that repository in Codex CLI or the IDE extension and invoke `$imozuru Dig into this field: ...`. Restart Codex if the skill does not appear. Claude Code keeps its `/plugin` installation and `/imozuru` invocation.
+
 ## Requirements
 
 The scripts run on the Python 3.10+ standard library alone, and use the following commands when they are installed.
@@ -104,7 +118,7 @@ Gaussian Splatting ってよく聞くけど全然わからない。論文とか�
 /imozuru watch react
 ```
 
-Results are saved to `~/research/<topic>/` in this form.
+Results are saved to `~/research/<topic>/` by default. If that path is outside the permitted write area, specify a location such as `research/<topic>/` inside an allowed working repository. Choose the destination explicitly before creating these files.
 
 ```
 map.md         question, needed claims, terms, people, venues, source table, next leads
@@ -117,8 +131,10 @@ report.html    extract page
 A sample extract page is in `examples/demo/`, and this command tries the script on its own.
 
 ```sh
-python3 skills/imozuru/scripts/report.py examples/demo
+python3 -X utf8 skills/imozuru/scripts/report.py examples/demo --check
 ```
+
+On Windows use `py -3 -X utf8 skills\imozuru\scripts\report.py examples\demo --check` (or `python -X utf8` if `py -3` does not work). This checks the example in the source repository. For a real investigation, run scripts from the installed skill's directory beside `SKILL.md`, regardless of the current working directory.
 
 ## Design
 
