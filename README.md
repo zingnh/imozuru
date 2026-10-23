@@ -72,12 +72,14 @@ npx skills add MaryCache/imozuru
 
 Codex で使う作業リポジトリの `.agents/skills/imozuru/` に、このリポジトリの `skills/imozuru/` をディレクトリごとコピーします。`SKILL.md` だけでなく `scripts/` と `references/` も必要です。Codex は作業ディレクトリからリポジトリのルートまでにある `.agents/skills` を探します（[OpenAI のスキル仕様](https://developers.openai.com/codex/build-skills)）。
 
-Windows PowerShell では、このリポジトリのルートで次を実行します。`$targetRepo` は Codex で作業するリポジトリのパスに置き換えてください。
+Windows PowerShell では、新規導入時にこのリポジトリのルートで次を実行します。`$targetRepo` は Codex で作業するリポジトリのパスに置き換えてください。導入先が既にある場合は停止し、上書きや二重コピーをしません。
 
 ```powershell
 $targetRepo = "C:\path\to\your-repo"
+$skillDestination = Join-Path $targetRepo ".agents\skills\imozuru"
+if (Test-Path -LiteralPath $skillDestination) { throw "imozuru の導入先は既にあります: $skillDestination" }
 New-Item -ItemType Directory -Force (Join-Path $targetRepo ".agents\skills") | Out-Null
-Copy-Item -Recurse "skills\imozuru" (Join-Path $targetRepo ".agents\skills\imozuru")
+Copy-Item -LiteralPath "skills\imozuru" -Destination $skillDestination -Recurse
 ```
 
 Codex CLI または IDE 拡張でその作業リポジトリを開き、`$imozuru 芋づる式に調べて: ...` のように呼び出します。スキル一覧に出ない場合は Codex を再起動してください。Claude Code の `/plugin` や `/imozuru` とは呼び方が異なります。

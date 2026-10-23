@@ -184,6 +184,13 @@ class FetchPreservationTests(unittest.TestCase):
             self.assertEqual(self.run_fetch(), 0)
         self.assertEqual((self.sources / "paper.md").read_bytes(), body)
 
+    def test_text_newline_variants_are_preserved(self):
+        for body in (b"CRLF line\r\n" * 100, b"LF\nCRLF\r\nCR\r" * 100):
+            with self.subTest(body=body[:20]), \
+                    patch.object(fetch, "download", return_value=(body, "text/plain; charset=utf-8")):
+                self.assertEqual(self.run_fetch(), 0)
+                self.assertEqual((self.sources / "paper.md").read_bytes(), body)
+
     def test_successful_text_retry_replaces_source_and_reports_final_path(self):
         for ctype, suffix in (("text/plain", ".md"), ("text/markdown", ".md"),
                               ("application/json", ".json"), ("text/csv", ".csv")):

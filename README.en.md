@@ -76,12 +76,14 @@ To install by hand, copy `skills/imozuru/` to `~/.claude/skills/imozuru/`.
 
 Copy the entire `skills/imozuru/` directory into `.agents/skills/imozuru/` in the repository where you use Codex. Keep `SKILL.md`, `scripts/`, and `references/` together. Codex scans `.agents/skills` from the working directory up to the repository root ([OpenAI's skill documentation](https://developers.openai.com/codex/build-skills)).
 
-From the root of this source repository, use PowerShell on Windows. Replace `$targetRepo` with the path of the repository where you use Codex.
+For a new installation, use PowerShell from the root of this source repository. Replace `$targetRepo` with the path of the repository where you use Codex. The command stops if the destination already exists, so it does not overwrite or nest another copy.
 
 ```powershell
 $targetRepo = "C:\path\to\your-repo"
+$skillDestination = Join-Path $targetRepo ".agents\skills\imozuru"
+if (Test-Path -LiteralPath $skillDestination) { throw "imozuru skill destination already exists: $skillDestination" }
 New-Item -ItemType Directory -Force (Join-Path $targetRepo ".agents\skills") | Out-Null
-Copy-Item -Recurse "skills\imozuru" (Join-Path $targetRepo ".agents\skills\imozuru")
+Copy-Item -LiteralPath "skills\imozuru" -Destination $skillDestination -Recurse
 ```
 
 Open that repository in Codex CLI or the IDE extension and invoke `$imozuru Dig into this field: ...`. Restart Codex if the skill does not appear. Claude Code keeps its `/plugin` installation and `/imozuru` invocation.
