@@ -59,7 +59,7 @@ class EncodingTests(unittest.TestCase):
     def test_report_check_runs_without_default_encoding(self):
         """既定の文字コードに頼る箇所があれば、EncodingWarning をエラーにして落とす。"""
         res = subprocess.run(
-            [sys.executable, "-I", "-X", "warn_default_encoding", "-W", "error::EncodingWarning",
+            [sys.executable, "-I", "-X", "utf8", "-X", "warn_default_encoding", "-W", "error::EncodingWarning",
              str(SCRIPTS / "report.py"), str(ROOT / "examples/demo"), "--check"],
             capture_output=True, encoding="utf-8")
         self.assertEqual(res.returncode, 0, res.stderr)
